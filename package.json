@@ -1,0 +1,23 @@
+{
+  "name": "ops-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^2.0.0-rc.5",
+    "consul": "^0.25.0",
+    "koa": "^1.2.0",
+    "koa-bodyparser": "^2.2.0",
+    "koa-router": "^5.4.0",
+    "lynx": "^0.2.0",
+    "node-ssh": "^2.0.7",
+    "node-uuid": "^1.4.7",
+    "request": "^2.72.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yamil Asusta",
+  "license": "ISC"
+}
