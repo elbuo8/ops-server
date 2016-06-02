@@ -14,7 +14,7 @@ alerts.post('/datadog', function(next) {
   statusEntry.Value = JSON.parse(statusEntry.Value);
   statusEntry.Value.current = statusEntry.Value.previous;
 
-  const nodes = yield this.consul.catalog.service.node({ service: 'a0', tag: 'canary' });
+  const nodes = yield this.consul.catalog.service.nodes({ service: 'a0', tag: 'canary' });
 
   deploy(this.consul, statusEntry, nodes);
 });

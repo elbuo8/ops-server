@@ -5,13 +5,14 @@ const Router = require('koa-router');
 const deploy = require('../lib/deployer');
 
 const deployments = new Router({
-  prefix: 'deployments'
+  prefix: '/deployments'
 });
 
 deployments.use(function *(next) {
   try {
     yield next;
   } catch (err) {
+    console.log(err);
     // Add logger
     // Format slack response
     this.body = {
@@ -24,7 +25,7 @@ deployments.use(function *(next) {
 
 deployments.post('/deploy', function*(next) {
   // Validate payload is authentic by verifying token
-  if (this.request.body !== 'token') {
+  if (this.request.body.token !== 'token') {
     this.throw('Invalid token', 403);
   }
 
@@ -65,9 +66,9 @@ deployments.post('/deploy', function*(next) {
   yield next;
 
 }, function*() {
-  const nodes = yield this.consul.catalog.service.node({ service: 'a0', tag: 'canary' });
+  const nodes = yield this.consul.catalog.service.nodes({ service: 'a0', tag: 'canary' });
 
-  deploy(consul, this.statusEntry, nodes);
+  deploy(this.consul, this.statusEntry, nodes);
 
   this.status = 200;
   this.body = {

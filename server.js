@@ -1,6 +1,7 @@
 'use strict';
 
 const koa = require('koa');
+const koaLogger = require('koa-logger');
 const bodyParser = require('koa-bodyparser');
 const consul = require('consul')({ host: 'consul-0', promisify: true });
 
@@ -11,6 +12,7 @@ const deploymentController = require('./controllers/deployments');
 const promoter = require('./lib/promoter')(consul);
 
 // General middleware
+app.use(koaLogger());
 app.use(bodyParser());
 app.use(function *(next) {
   this.consul = consul;
