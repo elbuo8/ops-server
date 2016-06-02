@@ -3,6 +3,7 @@
 const Router = require('koa-router');
 
 const deploy = require('../lib/deployer');
+const promote = require('../lib/promoter');
 
 const deployments = new Router({
   prefix: '/deployments'
@@ -73,6 +74,15 @@ deployments.post('/deploy', function*(next) {
   this.status = 200;
   this.body = {
     text: 'Deployment in progress',
+    response_type: 'in_channel'
+  };
+});
+
+deployments.post('/promote', function*() {
+  promote(this.consul);
+  this.status = 200;
+  this.body = {
+    text: 'Promotion in progress',
     response_type: 'in_channel'
   };
 });
