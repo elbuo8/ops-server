@@ -8,7 +8,7 @@ const consul = require('consul')({ host: 'consul-0', promisify: true });
 const app = koa();
 const deploymentController = require('./controllers/deployments');
 
-const promoter = require('./lib/promoter');
+const promote = require('./lib/promoter');
 // General middleware
 app.use(koaLogger());
 app.use(bodyParser());
