@@ -6,6 +6,8 @@ const bodyParser = require('koa-bodyparser');
 const consul = require('consul')({ host: 'consul-0', promisify: true });
 
 const app = koa();
+
+const alertController = require('./controllers/alerts');
 const deploymentController = require('./controllers/deployments');
 
 const promote = require('./lib/promoter');
@@ -17,6 +19,7 @@ app.use(function *(next) {
   yield next;
 });
 
+app.use(alertController);
 app.use(deploymentController);
 
 setInterval(() => {
