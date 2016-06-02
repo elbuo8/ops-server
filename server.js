@@ -2,7 +2,7 @@
 
 const koa = require('koa');
 const bodyParser = require('koa-bodyparser');
-const consul = require('consul')({ host: 'consul-0' });
+const consul = require('consul')({ host: 'consul-0', promisify: true });
 
 const app = koa();
 const deploymentController = require('./controllers/deployments');

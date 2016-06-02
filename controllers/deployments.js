@@ -29,7 +29,7 @@ deployments.post('/deploy', function*(next) {
   }
 
   yield next;
-}, function *(next) {
+}, function*(next) {
   // Parse message
   const info = this.request.body.text.split(' ');
   this.deploymentInfo = {
@@ -39,47 +39,41 @@ deployments.post('/deploy', function*(next) {
   };
 
   yield next;
-}, function* (next) {
-  // Check Status of Canary
-  this.consul.kv.get('canary-status', (err, statusEntry) => {
-    if (err) {
-      throw err;
-    }
+}, function*(next) {
 
-    if (statusEntry) {
-      statusEntry.Value = JSON.parse(statusEntry.Value);
-      if (statusEntry.Value.testing) {
-        this.throw('Canary already in use', 400);
-      }
-    } else {
-      statusEntry = {
-        Key: 'canary-status',
-        Value: { current: this.deploymentInfo }
-      };
-    }
+  let statusEntry = yield this.consul.kv.get('canary-status');
 
-    statusEntry.Value.previous = statusEntry.Value.current;
-    statusEntry.Value.current = this.deploymentInfo;
-    statusEntry.Value.testing = true;
+  if (statusEntry) {
+    statusEntry.Value = JSON.parse(statusEntry.Value);
+  } else {
+    statusEntry = {
+      Key: 'canary-status',
+      Value: { current: this.deploymentInfo }
+    };
+  }
 
-    this.statusEntry = statusEntry;
+  if (statusEntry.Value.testing) {
+    this.throw('Canary already in use', 400);
+  }
 
-    yield next;
-  }, function*() {
-    this.consul.catalog.service.node({ service: 'a0', tag: 'canary' }, (err, nodes) {
-      if (err) {
-        throw err;
-      }
+  statusEntry.Value.previous = statusEntry.Value.current;
+  statusEntry.Value.current = this.deploymentInfo;
+  statusEntry.Value.testing = true;
 
-      deploy(consul, this.statusEntry, nodes);
+  this.statusEntry = statusEntry;
 
-      this.status = 200;
-      this.body = {
-        text: 'Deployment in progress',
-        response_type: 'in_channel'
-      };
-    });
-  });
+  yield next;
+
+}, function*() {
+  const nodes = yield this.consul.catalog.service.node({ service: 'a0', tag: 'canary' });
+
+  deploy(consul, this.statusEntry, nodes);
+
+  this.status = 200;
+  this.body = {
+    text: 'Deployment in progress',
+    response_type: 'in_channel'
+  };
 });
 
 module.exports = deployments.routes();

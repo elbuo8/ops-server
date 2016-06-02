@@ -9,22 +9,14 @@ const alerts = new Router({
 });
 
 alerts.post('/datadog', function(next) {
-  this.consul.kv.get('canary-status', (err, statusEntry) => {
-    if (err) {
-      throw err;
-    }
+  let statusEntry = yield this.consul.kv.get('canary-status');
 
-    statusEntry.Value = JSON.parse(statusEntry.Value);
-    statusEntry.Value.current = statusEntry.Value.previous;
+  statusEntry.Value = JSON.parse(statusEntry.Value);
+  statusEntry.Value.current = statusEntry.Value.previous;
 
-    this.consul.catalog.service.node({ service: 'a0', tag: 'canary' }, (err, nodes) {
-      if (err) {
-        throw error;
-      }
+  const nodes = yield this.consul.catalog.service.node({ service: 'a0', tag: 'canary' });
 
-      deploy(this.consul, statusEntry, nodes);
-    });
-  });
+  deploy(this.consul, statusEntry, nodes);
 });
 
 module.exports = alerts.routes();
