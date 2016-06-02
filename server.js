@@ -21,6 +21,6 @@ app.use(deploymentController);
 
 setInterval(() => {
   promote(consul);
-}, process.env.PROMOTION_INTERVAL || 90000);
+}, process.env.PROMOTION_INTERVAL || 300000);
 
 app.listen(process.env.PORT || 3000);
