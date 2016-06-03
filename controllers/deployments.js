@@ -23,14 +23,23 @@ deployments.use(function *(next) {
 
 deployments.post('/deploy', function*(next) {
   // Validate payload is authentic by verifying token
-  if (this.request.body.token !== 'token') {
+  if (!this.request.body || this.request.body.token !== 'token') {
     this.throw('Invalid token', 403);
   }
 
   yield next;
 }, function*(next) {
   // Parse message
+  if (!this.request.body.text) {
+    this.throw('Invalid text', 400);
+  }
+
   const info = this.request.body.text.split(' ');
+
+  if (info.length !== 3) {
+    this.throw('Invalid text', 400);
+  }
+
   this.deploymentInfo = {
     account: info[0],
     repo: info[1],
@@ -39,7 +48,6 @@ deployments.post('/deploy', function*(next) {
 
   yield next;
 }, function*(next) {
-
   let statusEntry = yield this.consul.kv.get('canary-status');
 
   if (statusEntry) {
