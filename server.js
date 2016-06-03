@@ -10,12 +10,15 @@ const app = koa();
 const alertController = require('./controllers/alerts');
 const deploymentController = require('./controllers/deployments');
 
+const deploy = require('./lib/deployer');
 const promote = require('./lib/promoter');
 
 // General middleware
 app.use(koaLogger());
 app.use(bodyParser());
 app.use(function *(next) {
+  this.deploy = deploy;
+  this.promote = promote;
   this.consul = consul;
   yield next;
 });

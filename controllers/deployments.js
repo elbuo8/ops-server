@@ -2,9 +2,6 @@
 
 const Router = require('koa-router');
 
-const deploy = require('../lib/deployer');
-const promote = require('../lib/promoter');
-
 const deployments = new Router({
   prefix: '/deployments'
 });
@@ -69,7 +66,7 @@ deployments.post('/deploy', function*(next) {
 }, function*() {
   const nodes = yield this.consul.catalog.service.nodes({ service: 'a0', tag: 'canary' });
 
-  deploy(this.consul, this.statusEntry, nodes);
+  this.deploy(this.consul, this.statusEntry, nodes);
 
   this.status = 200;
   this.body = {
@@ -79,7 +76,7 @@ deployments.post('/deploy', function*(next) {
 });
 
 deployments.post('/promote', function*() {
-  promote(this.consul);
+  this.promote(this.consul);
   this.status = 200;
   this.body = {
     text: 'Promotion in progress',
