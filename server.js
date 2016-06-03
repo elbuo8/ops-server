@@ -11,6 +11,7 @@ const alertController = require('./controllers/alerts');
 const deploymentController = require('./controllers/deployments');
 
 const promote = require('./lib/promoter');
+
 // General middleware
 app.use(koaLogger());
 app.use(bodyParser());
