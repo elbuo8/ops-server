@@ -92,4 +92,20 @@ deployments.post('/promote', function*() {
   };
 });
 
+deployments.post('/status', function*() {
+  const canaryStatus = yield this.consul.kv.get('canary-status');
+
+  if (!canaryStatus) {
+    this.throw('Canary not initialized');
+  }
+
+  canaryStatus.Value = JSON.parse(canaryStatus.Value);
+
+  this.status = 200;
+  this.body = {
+    text: `Current deployment: ${canaryStatus.Value.current}`,
+    response_type: 'in_channel'
+  }
+});
+
 module.exports = deployments.routes();
