@@ -100,10 +100,10 @@ deployments.post('/status', function*() {
   }
 
   canaryStatus.Value = JSON.parse(canaryStatus.Value);
-
+  const info = canaryStatus.Value.current;
   this.status = 200;
   this.body = {
-    text: `Current deployment: ${canaryStatus.Value.current}`,
+    text: `Current deployment: ${info.account}-${info.repo}-${info.branch}`,
     response_type: 'in_channel'
   }
 });
